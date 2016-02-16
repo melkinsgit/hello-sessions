@@ -3,11 +3,28 @@ var logger = require('morgan');   //Enable logging
 var session = require('express-session')  //To handle sessions
 var parseurl = require('parseurl') //get the actual url requested, will use to count visits to particular pages.
 
+var MongoDBStore = require('connect-mongodb-session')(session);
+
 app = express();         //Create app
 app.use(logger('dev'));   //Initialize logger - do this first
 
+
+var store = new MongoDBStore(
+  {
+    uri:'mongodb://localhost:27017/session_db',
+    collection:'mySessions'
+  }
+)
+
+store.on('error', function(error){
+  asset.ifError(error);
+  assert.ok(false);     //crash app if can't connect.
+});
+
+
 app.use(session({
   secret: "random_number_here",  //replace in production app
+  store: store
 }));
 
 //All routes will run this function first
