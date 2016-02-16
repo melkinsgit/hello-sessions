@@ -7,14 +7,15 @@ app = express();         //Create app
 app.use(logger('dev'));   //Initialize logger - do this first
 
 app.use(session({
-  secret: "random_number_here"  //replace in production app
+  secret: "random_number_here",  //replace in production app
 }));
 
-//All routes will run this function first/
+//All routes will run this function first
 //Calling next() at the end of this function will run the next matching route handler
 app.use(function(req, res, next){
-
+  console.log(req.session.id);
   var views = req.session.views
+
   if (!views) {
     views = req.session.views = {}; //first time visitor - set up view counter
   }
@@ -28,21 +29,33 @@ app.use(function(req, res, next){
   }
 
   next();    //And call the next matching route handler
-
 });
 
 
+//Home page will display the last animal page the user visited.
 app.get('/', function(req, res, next){
-  res.send("home page")
+  var lastpage = req.session.lastpage;
+  if (lastpage){
+    res.send("The last animal page you visited was " + lastpage)
+  } else {
+    res.send("You have not visited any animal pages.")
+  }
 })
 
+//This is an animal page, so add it to the session
+//as the last animal page visited.
 app.get('/cat', function(req, res){
+  req.session.lastpage = "cat";
   res.send('Cat page')
 });
 
+//Same for fish. Can you see a way to avoid
+//adding all of the animal pages manually?
 app.get('/fish', function(req, res) {
+  req.session.lastpage = "fish";
   res.send('Fish page');
 });
+
 
 
 app.get('/counts', function(req, res){
