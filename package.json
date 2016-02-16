@@ -1,0 +1,9 @@
+{
+  "name": "hello_sessions",
+  "main": "app.js",
+  "dependencies": {
+    "express": "4.x",
+    "express-session": "^1.13.0",
+    "morgan": "^1.6.1"
+  }
+}
